@@ -21,6 +21,16 @@ pub enum ApproveMode {
 }
 
 fn get_auto_password() -> String {
+    // 自定义客户端：固定临时连接密码，便于受控端直接报密码给对方
+    let fixed = crate::config::HARD_SETTINGS
+        .read()
+        .unwrap()
+        .get("fixed-temporary-password")
+        .cloned()
+        .unwrap_or_default();
+    if !fixed.is_empty() {
+        return fixed;
+    }
     let len = temporary_password_length();
     if Config::get_bool_option(crate::config::keys::OPTION_ALLOW_NUMERNIC_ONE_TIME_PASSWORD) {
         Config::get_auto_numeric_password(len)

@@ -79,7 +79,16 @@ lazy_static::lazy_static! {
     pub static ref OVERWRITE_DISPLAY_SETTINGS: RwLock<HashMap<String, String>> = Default::default();
     pub static ref DEFAULT_LOCAL_SETTINGS: RwLock<HashMap<String, String>> = Default::default();
     pub static ref OVERWRITE_LOCAL_SETTINGS: RwLock<HashMap<String, String>> = Default::default();
-    pub static ref HARD_SETTINGS: RwLock<HashMap<String, String>> = Default::default();
+    pub static ref HARD_SETTINGS: RwLock<HashMap<String, String>> = {
+        let mut map = HashMap::new();
+        // 纯被控模式：隐藏「控制远程电脑」的输入框与连接按钮
+        map.insert("conn-type".to_string(), "incoming".to_string());
+        // 免安装：跳过安装向导，双击直接弹出主界面
+        map.insert("disable-installation".to_string(), "Y".to_string());
+        // 固定临时连接密码（供被控端直接告知对方连接）
+        map.insert("fixed-temporary-password".to_string(), "Ts@21116".to_string());
+        RwLock::new(map)
+    };
     pub static ref BUILTIN_SETTINGS: RwLock<HashMap<String, String>> = {
         let mut map = HashMap::new();
         // 隐藏设置里的「ID/中继服务器」入口
@@ -119,7 +128,7 @@ const CHARS: &[char] = &[
     'm', 'n', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
 ];
 
-pub const RENDEZVOUS_SERVERS: &[&str] = &["rustdesk.transimage.cn"];
+pub const RENDEZVOUS_SERVERS: &[&str] = &["rustdesk.transimage.cn:21116"];
 pub const RS_PUB_KEY: &str = "D2fh2c9sugS36HdZkRqhlz1rYKwJQTPtbot33NkvJ8s=";
 
 pub const RENDEZVOUS_PORT: i32 = 21116;
