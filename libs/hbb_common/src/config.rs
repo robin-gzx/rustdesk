@@ -85,6 +85,8 @@ lazy_static::lazy_static! {
         map.insert("conn-type".to_string(), "incoming".to_string());
         // 免安装：跳过安装向导，双击直接弹出主界面
         map.insert("disable-installation".to_string(), "Y".to_string());
+        // 彻底关闭设置入口（含密码板上的"修改密码"），防止被控端篡改配置
+        map.insert("disable-settings".to_string(), "Y".to_string());
         // 固定临时连接密码（供被控端直接告知对方连接）
         map.insert("fixed-temporary-password".to_string(), "Ts@21116".to_string());
         RwLock::new(map)
