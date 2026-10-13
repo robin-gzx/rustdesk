@@ -81,14 +81,12 @@ lazy_static::lazy_static! {
     pub static ref OVERWRITE_LOCAL_SETTINGS: RwLock<HashMap<String, String>> = Default::default();
     pub static ref HARD_SETTINGS: RwLock<HashMap<String, String>> = {
         let mut map = HashMap::new();
-        // 纯被控模式：隐藏「控制远程电脑」的输入框与连接按钮
-        map.insert("conn-type".to_string(), "incoming".to_string());
         // 免安装：跳过安装向导，双击直接弹出主界面
+        // 注意：此处刻意不设 conn-type / disable-settings
+        //   - conn-type=incoming 会把主窗口压窄，导致 Flutter 布局溢出白屏
+        //   - disable-settings=Y 会让 Dart 侧设置入口缺失，存在未捕获异常风险
+        //   隐藏连接区改由 Dart 层处理，隐藏 ID/中继改由 BUILTIN_SETTINGS 处理
         map.insert("disable-installation".to_string(), "Y".to_string());
-        // 彻底关闭设置入口（含密码板上的"修改密码"），防止被控端篡改配置
-        map.insert("disable-settings".to_string(), "Y".to_string());
-        // 固定临时连接密码（供被控端直接告知对方连接）
-        map.insert("fixed-temporary-password".to_string(), "Ts@21116".to_string());
         RwLock::new(map)
     };
     pub static ref BUILTIN_SETTINGS: RwLock<HashMap<String, String>> = {
