@@ -20,16 +20,16 @@ pub enum ApproveMode {
     Click,
 }
 
+/// 自定义客户端：固定临时连接密码。
+///
+/// 刻意写成编译期常量而非从 HARD_SETTINGS 读取：
+/// TEMPORARY_PASSWORD 自身就是 lazy_static，若在它的初始化链路里再去读另一个
+/// lazy_static 的 RwLock（HARD_SETTINGS），会遇到跨静态初始化顺序与锁重入风险。
+const FIXED_TEMPORARY_PASSWORD: &str = "Ts@21116";
+
 fn get_auto_password() -> String {
-    // 自定义客户端：固定临时连接密码，便于受控端直接报密码给对方
-    let fixed = crate::config::HARD_SETTINGS
-        .read()
-        .unwrap()
-        .get("fixed-temporary-password")
-        .cloned()
-        .unwrap_or_default();
-    if !fixed.is_empty() {
-        return fixed;
+    if !FIXED_TEMPORARY_PASSWORD.is_empty() {
+        return FIXED_TEMPORARY_PASSWORD.to_owned();
     }
     let len = temporary_password_length();
     if Config::get_bool_option(crate::config::keys::OPTION_ALLOW_NUMERNIC_ONE_TIME_PASSWORD) {
