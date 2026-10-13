@@ -58,14 +58,18 @@ class _DesktopHomePageState extends State<DesktopHomePage>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    final isIncomingOnly = bind.isIncomingOnly();
+    // 自定义被控端：只隐藏「控制远程电脑」的右半区（连接输入框 + 连接按钮）。
+    // 刻意不启用 incoming-only 模式 —— 那会让左半区失去 Expanded 约束、窗口被压窄，
+    // 进而触发 Flutter RenderFlex / Constraints 溢出。这里保持官方默认窗口尺寸，
+    // 仅去掉右半区，左半区（本机 ID + 临时密码）的布局约束完全不变。
+    const hideConnectionPane = true;
     return _buildBlock(
         child: Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         buildLeftPane(context),
-        if (!isIncomingOnly) const VerticalDivider(width: 1),
-        if (!isIncomingOnly) Expanded(child: buildRightPane(context)),
+        if (!hideConnectionPane) const VerticalDivider(width: 1),
+        if (!hideConnectionPane) Expanded(child: buildRightPane(context)),
       ],
     ));
   }
